@@ -2,7 +2,7 @@
 Convert PDF to Google Calendar.
 
 
-#### Install & Usage
+### Install & Usage
 
 Requirements
 - Unix system
@@ -29,3 +29,18 @@ Note the page number your schedule is on and run:
 python ./main.py <my-page> <my-pdf>
 ```
 Replace `<my-page>` with for example `20` and `<my-pdf>` with for example `luzac-rooster.pdf`.
+
+### Contributing
+If you'd like to contribute to this project or file a bug or feature request, please head over to the issue tracker or fork this repository.
+
+### License
+This software is open-sourced under the MIT Licence (see [LICENSE](/LICENSE) for the full license). So within some limits, you can do with the code whatever you want. However, if you like and/or want to re-use it, I'd really appreciate a reference to this project page.
+
+The software is provided as is. It might work as expected - or not. Just don't blame me.
+
+### References & Sources
+Google Developers - Calendar API Home: https://developers.google.com/google-apps/calendar/
+Google Developers - Python Reference: https://developers.google.com/api-client-library/python/reference/pydoc
+Google Developers - Calendar API for Python Docs: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/
+Google Developers - Console: https://console.developers.google.com/
+PDFMiner by Yusuke Shinyama: https://github.com/euske/pdfminer/
