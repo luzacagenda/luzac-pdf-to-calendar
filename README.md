@@ -40,7 +40,11 @@ The software is provided as is. It might work as expected - or not. Just don't b
 
 ### References & Sources
 Google Developers - Calendar API Home: https://developers.google.com/google-apps/calendar/
+
 Google Developers - Python Reference: https://developers.google.com/api-client-library/python/reference/pydoc
+
 Google Developers - Calendar API for Python Docs: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/
+
 Google Developers - Console: https://console.developers.google.com/
+
 PDFMiner by Yusuke Shinyama: https://github.com/euske/pdfminer/
