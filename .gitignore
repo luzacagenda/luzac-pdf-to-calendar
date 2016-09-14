@@ -1,4 +1,7 @@
 output*
 rooster*
+events*
 *.pyc
 *.pdf
+client_secret.json
+client_id.json
