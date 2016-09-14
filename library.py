@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-# Find between.
+import datetime
+import json
+
+# Find a string between to substrings.
+# @param string s
+# @param string first
+# @param string last
+# @returns string
 def find_between( s, first, last ):
     try:
         start = s.index( first ) + len( first )
@@ -10,6 +17,10 @@ def find_between( s, first, last ):
         return ""
 
 # Find between last occurence.
+# @param string s
+# @param string first
+# @param string last
+# @returns string
 def find_between_r( s, first, last ):
     try:
         start = s.rindex( first ) + len( first )
@@ -18,7 +29,38 @@ def find_between_r( s, first, last ):
     except ValueError:
         return ""
 
-def determine_day( top ):
+# Find the date for the first Monday after a given a date.
+# @param string d
+# @param integer weekday
+# @returns string
+def next_weekday(d, weekday):
+    days_ahead = weekday - d.weekday()
+    if days_ahead <= 0: # Target day already happened this week
+        days_ahead += 7
+    return d + datetime.timedelta(days_ahead)
+
+# Write file to disk.
+# @param string path
+# @param string contents
+# @param string mode
+# @returns boolean
+def writeFile( path, contents, mode ):
+    f = open(path, mode)
+    f.write(contents)
+    f.close()
+    return True
+
+# Our customised JSON dumps configuration.
+# @param list | dict
+# @returns string
+def toJson( obj ):
+    return json.dumps(obj, ensure_ascii=False, sort_keys=False, indent=2, separators=(",", ": "))
+
+# Determine the day of the appointment
+# by comparing it's left offset.
+# @param string left
+# @returns string
+def determine_day( left ):
 
     m = 10
     avg1 = 180
@@ -27,43 +69,49 @@ def determine_day( top ):
     avg4 = 552
     avg5 = 680
 
-    pos = int(top)
+    pos = int(left)
 
     if pos <= avg1+m and pos >= avg1-m:
-        return "ma"
+        return 0 # monday
 
     if pos <= avg2+m and pos >= avg2-m:
-        return "di"
+        return 1 # tuesday
 
     if pos <= avg3+m and pos >= avg3-m:
-        return "wo"
+        return 2 # wednesday
 
     if pos <= avg4+m and pos >= avg4-m:
-        return "do"
+        return 3 # thursday
 
     if pos <= avg5+m and pos >= avg5-m:
-        return "vr"
+        return 4 # friday
 
     return False
 
-def determine_hour( left ):
+# Determine the schoolhour of the appointment
+# by comparing it's top offset.
+# @param string top
+# @returns integer
+def determine_hour( top ):
 
+    ##############                                               ##############
+    #                        turfgetallen            gemiddelde  verschil     #
+    # uur 0 (8.00-9.00)      ?                                                #
+    # uur 1 (9.00-10.00)     188 en 190px            189         ?            #
+    # uur 2 (10.00-11.00)    223, 221, 224, 222px    222,5       33,5         #
+    # uur 3 (11.15-12.15)    259, 261, 260, 258px    259,5       37           #
+    # uur 4 (12.15-13.15)    306, 303, 304,          304,3                    #
+    # uur 5 (13.45-14.45)    340, 341, 339,          340                      #
+    # uur 6 (14.45-15.45)    377, 374, 376,          375,6                    #
+    # uur 7 (16.00-17.00)    413, 412,               412,5                    #
+    # uur 8 (17.00-18.00)    ?                                                #
+    ###########################################################################
 
-    #                                   turfgetallen            gemiddelde  verschil
-    # uur 0 (8.00-9.00) begint rond     ?
-    # uur 1 (9.00-10.00) zit tussen     188 en 190px            189         diff ?
-    # uur 2 (10.15-11.15) zit tussen    223, 221, 224, 222px    222,5       diff 33,5
-    # uur 3 (11.15-12.15) zit tussen    259, 261, 260, 258px    259,5       diff 37
-    # uur 4 (12.15-13.15) zit tussen    306, 303, 304,          304,3
-    # uur 5 (13.45-14.45) zit tussen    340, 341, 339,          340
-    # uur 6 (14.45-15.45) zit tussen    377, 374, 376,          375,6
-    # uur 7 (16.00-17.00) zit tussen    413, 412,               412,5
-    # uur 8 (17.00-18.00) zit tussen    ?
-
-    # we kunnen stellen dat een uur niet meer dan 10px afwijkt van zijn gemiddelde.
-    # dus als top tussen 170 en 200 ligt, weten we zeker dat het een eerste lesuur is.
-    # en als een top tussen 210 en 230, dat het een tweede lesuur is.
-    # en als een top tussen 250 en 270, dat het een derde lesuur is.
+    # We kunnen stellen dat de positie van een uur niet meer dan
+    # 10px afwijkt van zijn soort's gemiddelde. Dus als een top tussen
+    # 170px en 200px ligt, weten we zeker dat het een eerste lesuur is.
+    # En als een top tussen 210 en 230, dat het een tweede lesuur is.
+    # En als een top tussen 250 en 270, dat het een derde lesuur is, etc etc..
 
     m      = 10  # margin
     avg1   = 189 # ~ 190
@@ -74,7 +122,7 @@ def determine_hour( left ):
     avg6   = 376 # ~ 380
     avg7   = 413 # ~ 410
 
-    pos = int(left)
+    pos = int(top)
 
     if pos <= avg1+m and pos >= avg1-m:
         return 1

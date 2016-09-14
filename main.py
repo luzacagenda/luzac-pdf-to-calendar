@@ -1,16 +1,43 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Luzac Rooster PDF to Google Calendar
+# Developed by Sander Laarhoven (c) 2016
+# Licensed under the MIT License
+# https://git.io/luzac
+
+# Import required default modules.
+
 import sys
 import os.path
 import subprocess
 import json
+import datetime
 
+# Import our files.
 import library
+import googlelib
 
-__version__ = "1.0.0"
+# Script Constants.
+__version__         = "1.0.0"
+__timezone__        = "Europe/Amsterdam"
+__calendar__        = "primary"
+__debugMode__       = True
+__scopes__          = "https://www.googleapis.com/auth/calendar"
+__client_secret__   = "client_secret.json"
 
-print "    Luzac Rooster PDF to Calendar"
-print "    version "+__version__
-print "    https://git.io/luzac"
+# Schoolhour times. All classes last one hour (60mins).
+schoolHours = [ ["8", "00"], ["9", "00"], ["10", "00"], ["11", "15"],
+                ["12", "15"], ["13", "45"], ["14", "45"], ["16", "00"],
+                ["17", "00"] ]
+
+# Let's get this party started.
+print "    Luzac Rooster PDF to Google Calendar"
+print "    version "+__version__+" - https://git.io/luzac"
+
+# ========================================== #
+#          1. Convert the PDF to JSON.
+# ========================================== #
 
 # Is the pdf2txt module available?
 try:
@@ -37,18 +64,17 @@ if not os.path.isfile(pdfFile):
 print "[*] PDF file: "+pdfFile+"."
 
 # Run pdfminer.
+print "[*] PDFMiner is starting HTML extraction.."
 command = 'pdf2txt.py -t html -p '+studentNumber+' -o output-'+studentNumber+'.html '+pdfFile
 p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 
 # Wait for output.
+print "[*] Waiting for PDFMiner to finish.."
 (output, err) = p.communicate()
 status = p.wait()
 
-# Save output.
-print "[*] PDFMiner exited with status: ", status
-f = open("output.html", "w")
-f.write(output)
-f.close()
+# What was the result?
+print "[*] PDFMiner exited with status/error: ", status, "/", err
 
 # Set the data list.
 data = {}
@@ -92,21 +118,97 @@ with open("output-"+studentNumber+".html") as f:
             continue
 
         if "textbox" in line:
-            title = line.rpartition(">")[-1].strip()
+            subject = line.rpartition(">")[-1].strip()
             top = library.find_between(line, "top:", "px;")
             left = library.find_between(line, "left:", "px;")
             hour = library.determine_hour(top)
+            startTime = schoolHours[hour]
             day = library.determine_day(left)
-            data['rooster'].append({"title": title, "hour": hour, "day": day})
+            data['rooster'].append({"subject": subject, "hour": hour,
+                                    "startTime": startTime, "day": day})
             continue
 
-        #print line
-
+# Did we actually parse anything?
 print "[*] Parsed "+str(n)+" lines."
+if n == 0:
+    print "[!] Got 0 lines from PDFMiner, something went wrong."
+    sys.exit()
 
 # Dump to JSON.
-jsonData = json.dumps(data, ensure_ascii=False, sort_keys=False, indent=2, separators=(",", ": "))
-f = open("rooster-"+studentNumber+".json", "w")
-f.write(jsonData)
-f.close()
+jsonData = library.toJson(data)
+library.writeFile("rooster-"+studentNumber+".json", jsonData, "w")
 print "[*] Wrote JSON to disk."
+
+# =============================================== #
+#    2. Convert JSON to Google Calendar events.
+# =============================================== #
+
+# Get the next monday from the date when the PDF was sent.
+# The sent date is in d-m-yyyy format,
+# the returned date is in yyyy-mm-dd format.
+parts = data['date'].split("-")
+date = datetime.date(int(parts[2]), int(parts[1]), int(parts[0]))
+nextMonday = library.next_weekday(date, 0)
+print "[*] The next monday is at ", nextMonday
+
+# Loop through all appointments and convert them
+# into Google Calendar event objects.
+events = []
+for appointmentIndex, appointmentData in enumerate(data['rooster']):
+
+    print "[*] Converting appointment #", appointmentIndex
+
+    # Only parse valid days.
+    day = appointmentData['day']
+    if str(day) != "0" and day == False:
+        print "[!] Could not determine date of appointment, day is False."
+        continue
+
+    # Determine the appointment date.
+    if str(day) == "0":
+        appointmentDate = nextMonday
+    else:
+        appointmentDate = library.next_weekday(nextMonday, day)
+    print "    Date: ("+str(day)+")", appointmentDate
+
+    # Determine the start time of the appointment.
+    hours = int(appointmentData['startTime'][0])
+    minutes = int(appointmentData['startTime'][1])
+    appointmentStart = datetime.datetime.combine( appointmentDate, datetime.time(hours, minutes) )
+
+    # Determine the end time of the appointment.
+    appointmentEnd = appointmentStart + datetime.timedelta(hours = 1)
+
+    # Construct the event object.
+    events.append({
+        "summary": "["+str(appointmentData['hour'])+"] "+appointmentData['subject'],
+        "location": "Lokaal "+appointmentData['classroom'],
+        "description": "",
+        "start": {
+            "dateTime": appointmentStart.isoformat(),
+            "timeZone": __timezone__
+        },
+        "end": {
+            "dateTime": appointmentEnd.isoformat(),
+            "timeZone": __timezone__
+        },
+        "reminders": {
+            "useDefault": False,
+            "overrides": [
+                { "method": "popup", "minutes": 5 }
+            ]
+        }
+    })
+
+    pass
+
+# Save this to disk.
+jsonEvents = library.toJson(events)
+library.writeFile("events-"+studentNumber+".json", jsonEvents, "w")
+
+# Obtain credentials with Google OAuth2.
+#googlelib.test(__client_secret__, __scopes__, __calendar__)
+
+for eventIndex, eventData in enumerate(events):
+    googlelib.addEvent(eventIndex, eventData, __client_secret__, __scopes__, __calendar__)
+    pass
