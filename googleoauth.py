@@ -64,7 +64,7 @@ def main():
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
-    credentials = get_credentials()
+    credentials = get_credentials(CLIENT_SECRET_FILE, SCOPES, APPLICATION_NAME)
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
