@@ -104,7 +104,7 @@ def determine_hour( top ):
     # uur 5 (13.45-14.45)    340, 341, 339,          340                      #
     # uur 6 (14.45-15.45)    377, 374, 376,          375,6                    #
     # uur 7 (16.00-17.00)    413, 412,               412,5                    #
-    # uur 8 (17.00-18.00)    ?                                                #
+    # uur 8 (17.00-18.00)    447                                              #
     ###########################################################################
 
     # We kunnen stellen dat de positie van een uur niet meer dan
@@ -121,6 +121,7 @@ def determine_hour( top ):
     avg5   = 340 # ~ 340
     avg6   = 376 # ~ 380
     avg7   = 413 # ~ 410
+    avg8   = 435 # not enough data points.
 
     pos = int(top)
 
