@@ -1,12 +1,13 @@
 # Luzac PDF to Google Calendar
 Convert PDF to Google Calendar.
 
+![Terminal Example](terminal.png)
 
 ### Install & Usage
 
 Requirements
 - Unix system
-- Python 2.7
+- Python 2.7 (3 not supported)
 
 ```
 git clone https://github.com/lesander/luzac-pdf-to-calendar.git
@@ -30,6 +31,8 @@ python ./main.py <my-page> <my-pdf>
 ```
 Replace `<my-page>` with for example `20` and `<my-pdf>` with for example `luzac-rooster.pdf`.
 
+When your grant token has expired, just re-run `googleoauth.py` to obtain a new token.
+
 ### Contributing
 If you'd like to contribute to this project or file a bug or feature request, please head over to the issue tracker or fork this repository.
 
@@ -39,12 +42,12 @@ This software is open-sourced under the MIT Licence (see [LICENSE](/LICENSE) for
 The software is provided as is. It might work as expected - or not. Just don't blame me.
 
 ### References & Sources
-Google Developers - Calendar API Home: https://developers.google.com/google-apps/calendar/
+[GitHub - PDFMiner by Yusuke Shinyama](https://github.com/euske/pdfminer)
 
-Google Developers - Python Reference: https://developers.google.com/api-client-library/python/reference/pydoc
+[Google Developers - Calendar API Home](https://developers.google.com/google-apps/calendar)
 
-Google Developers - Calendar API for Python Docs: https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/
+[Google Developers - Python Reference](https://developers.google.com/api-client-library/python/reference/pydoc)
 
-Google Developers - Console: https://console.developers.google.com/
+[Google Developers - Calendar API for Python Docs](https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest)
 
-PDFMiner by Yusuke Shinyama: https://github.com/euske/pdfminer/
+[Google Developers - Console](https://console.developers.google.com)
