@@ -181,6 +181,10 @@ for appointmentIndex, appointmentData in enumerate(data['rooster']):
     # Determine the end time of the appointment.
     appointmentEnd = appointmentStart + datetime.timedelta(hours = 1)
 
+    # Do we have a location?
+    if not 'classroom' in appointmentData:
+        appointmentData['classroom'] = "onbekend"
+
     # Construct the event object.
     events.append({
         "summary": "["+str(appointmentData['hour'])+"] "+appointmentData['subject'],
