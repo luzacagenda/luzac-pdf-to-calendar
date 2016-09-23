@@ -32,8 +32,10 @@ schoolHours = [ ["8", "00"], ["9", "00"], ["10", "00"], ["11", "15"],
                 ["17", "00"] ]
 
 # Let's get this party started.
+print "\n"
 print "    Luzac Rooster PDF to Google Calendar"
 print "    version "+__version__+" - https://git.io/luzac"
+print "\n"
 
 # ========================================== #
 #          1. Convert the PDF to JSON.
@@ -149,14 +151,14 @@ print "[*] Wrote JSON to disk."
 parts = data['date'].split("-")
 date = datetime.date(int(parts[2]), int(parts[1]), int(parts[0]))
 nextMonday = library.next_weekday(date, 0)
-print "[*] The next monday is at ", nextMonday
+print "[*] The next monday is at", nextMonday
 
 # Loop through all appointments and convert them
 # into Google Calendar event objects.
 events = []
 for appointmentIndex, appointmentData in enumerate(data['rooster']):
 
-    print "[*] Converting appointment #", appointmentIndex
+    print "\r[*] Converting appointment " + str(appointmentIndex+1) + "/" + str(len(data['rooster'])),
 
     # Only parse valid days.
     day = appointmentData['day']
@@ -169,7 +171,7 @@ for appointmentIndex, appointmentData in enumerate(data['rooster']):
         appointmentDate = nextMonday
     else:
         appointmentDate = library.next_weekday(nextMonday, day)
-    print "    Date: ("+str(day)+")", appointmentDate
+    #print "    Date: ("+str(day)+")", appointmentDate
 
     # Determine the start time of the appointment.
     hours = int(appointmentData['startTime'][0])
@@ -209,6 +211,8 @@ library.writeFile("events-"+studentNumber+".json", jsonEvents, "w")
 # Obtain credentials with Google OAuth2.
 #googlelib.test(__client_secret__, __scopes__, __calendar__)
 
+print "\n[*] Ready to start adding events to calendar.";
+raw_input("    Press ENTER to continue..\n");
 for eventIndex, eventData in enumerate(events):
     googlelib.addEvent(eventIndex, eventData, __client_secret__, __scopes__, __calendar__)
     pass
