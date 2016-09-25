@@ -6,7 +6,7 @@ Convert PDF to Google Calendar.
 ### Install & Usage
 
 Requirements
-- Unix system
+- Unix system (tested on OSX/MacOS)
 - Python 2.7 (3 not supported)
 
 ```
