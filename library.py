@@ -121,7 +121,7 @@ def determine_hour( top ):
     avg5   = 340 # ~ 340
     avg6   = 376 # ~ 380
     avg7   = 413 # ~ 410
-    avg8   = 435 # not enough data points.
+    avg8   = 445 # not enough data points.
 
     pos = int(top)
 
