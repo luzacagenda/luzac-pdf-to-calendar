@@ -96,7 +96,7 @@ def determine_hour( top ):
 
     ##############                                               ##############
     #                        turfgetallen            gemiddelde  verschil     #
-    # uur 0 (8.00-9.00)      ?                                                #
+    # uur 0 (8.00-9.00)      147, 148                                         #
     # uur 1 (9.00-10.00)     188 en 190px            189         ?            #
     # uur 2 (10.00-11.00)    223, 221, 224, 222px    222,5       33,5         #
     # uur 3 (11.15-12.15)    259, 261, 260, 258px    259,5       37           #
@@ -114,6 +114,7 @@ def determine_hour( top ):
     # En als een top tussen 250 en 270, dat het een derde lesuur is, etc etc..
 
     m      = 10  # margin
+    avg0   = 147 # ~ 145
     avg1   = 189 # ~ 190
     avg2   = 223 # ~ 220
     avg3   = 260 # ~ 260
@@ -124,6 +125,9 @@ def determine_hour( top ):
     avg8   = 445 # not enough data points.
 
     pos = int(top)
+
+    if pos <= avg0+m and pos >= avg0-m:
+        return 0
 
     if pos <= avg1+m and pos >= avg1-m:
         return 1
