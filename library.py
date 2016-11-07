@@ -62,7 +62,7 @@ def toJson( obj ):
 # @returns string
 def determine_day( left ):
 
-    m = 10
+    m = 20
     avg1 = 180
     avg2 = 290
     avg3 = 413
@@ -113,7 +113,7 @@ def determine_hour( top ):
     # En als een top tussen 210 en 230, dat het een tweede lesuur is.
     # En als een top tussen 250 en 270, dat het een derde lesuur is, etc etc..
 
-    m      = 10  # margin
+    m      = 20  # margin
     avg0   = 147 # ~ 145
     avg1   = 189 # ~ 190
     avg2   = 223 # ~ 220
