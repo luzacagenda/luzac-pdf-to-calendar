@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Luzac PDF to Calendar</title>
+    <style>
+      body {
+        font-family: "Helvetica";
+      }
+      th {
+        min-width: 200px;
+      }
+      th:first-of-type {
+        width: auto;
+      }
+      td, th {
+        padding: 8px;
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+
+    <input id="number" type="number" value="25"><button id="update">Load JSON to table</button>
+    <span>Load events.json file in this HTML table for testing purposes.</span>
+    <hr>
+
+    <div id="info">
+      <span id="name"></span>
+      <span id="date"></span>
+      <span id="week"></span>
+    </div>
+
+    <table id="rooster"></table>
+    <script src="display.js"></script>
+
+  </body>
+</html>
