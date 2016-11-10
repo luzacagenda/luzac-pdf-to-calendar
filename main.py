@@ -16,15 +16,15 @@ import datetime
 
 # Import our files.
 import library
-import googlelib
+#import googlelib
 
 # Script Constants.
-__version__         = "1.2.0"
+__version__         = "1.2.0a"
 __timezone__        = "Europe/Amsterdam"
-__calendar__        = "primary"
+#__calendar__        = "primary"
 __debugMode__       = True
-__scopes__          = "https://www.googleapis.com/auth/calendar"
-__client_secret__   = "client_secret.json"
+#__scopes__          = "https://www.googleapis.com/auth/calendar"
+#__client_secret__   = "client_secret.json"
 
 # Schoolhour times. All classes last one hour (60mins).
 schoolHours = [ ["8", "00"], ["9", "00"], ["10", "00"], ["11", "15"],
@@ -33,7 +33,7 @@ schoolHours = [ ["8", "00"], ["9", "00"], ["10", "00"], ["11", "15"],
 
 # Let's get this party started.
 print "\n"
-print "    Luzac Rooster PDF to Google Calendar"
+print "    Luzac Rooster PDF to JSON"
 print "    version "+__version__+" - https://git.io/luzac"
 print "\n"
 
@@ -80,6 +80,7 @@ print "[*] PDFMiner exited with status/error: ", status, "/", err
 
 # Set the data list.
 data = {}
+data['studentNumber'] = studentNumber;
 data['rooster'] = []
 n = 0
 
@@ -212,11 +213,5 @@ for appointmentIndex, appointmentData in enumerate(data['rooster']):
 jsonEvents = library.toJson(events)
 library.writeFile("events-"+studentNumber+".json", jsonEvents, "w")
 
-# Obtain credentials with Google OAuth2.
-#googlelib.test(__client_secret__, __scopes__, __calendar__)
-
-print "\n[*] Ready to start adding events to calendar.";
-raw_input("    Press ENTER to continue..\n");
-for eventIndex, eventData in enumerate(events):
-    googlelib.addEvent(eventIndex, eventData, __client_secret__, __scopes__, __calendar__)
-    pass
+print "[*] Done."
+print studentNumber
