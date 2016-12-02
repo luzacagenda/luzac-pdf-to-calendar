@@ -19,7 +19,7 @@ import library
 import googlelib
 
 # Script Constants.
-__version__         = "1.2.0"
+__version__         = "1.3.0"
 __timezone__        = "Europe/Amsterdam"
 __calendar__        = "primary"
 __debugMode__       = True
