@@ -26,7 +26,7 @@ __debugMode__       = True
 __scopes__          = "https://www.googleapis.com/auth/calendar"
 __client_secret__   = "client_secret.json"
 
-# Schoolhour times. All classes last one hour (60mins).
+# Schoolhour start times. All classes last one hour (60mins).
 schoolHours = [ ["8", "00"], ["9", "00"], ["10", "00"], ["11", "15"],
                 ["12", "15"], ["13", "45"], ["14", "45"], ["16", "00"],
                 ["17", "00"] ]
@@ -102,7 +102,7 @@ with open("output-"+studentNumber+".html") as f:
             data['name'] = line.split(">:", 1)[1].strip()
             print "[*] Name of teacher is "+data['name']
             # teachers do not have week numbers.
-            data['week'] = '9001'
+            data['week'] = False
             continue
 
         if "WEEKROOSTER" in line:
