@@ -92,8 +92,17 @@ with open("output-"+studentNumber+".html") as f:
         n = n + 1
 
         if "Naam Leerling" in line:
+            data['type'] = 'student'
             data['name'] = line.split(">:", 1)[1].strip()
             print "[*] Name of student is "+data['name']
+            continue
+
+        if "Naam docent" in line:
+            data['type'] = 'teacher'
+            data['name'] = line.split(">:", 1)[1].strip()
+            print "[*] Name of teacher is "+data['name']
+            # teachers do not have week numbers.
+            data['week'] = '9001'
             continue
 
         if "WEEKROOSTER" in line:
@@ -119,13 +128,17 @@ with open("output-"+studentNumber+".html") as f:
             # ignore.
             continue
 
+        if "Persoonlijk rooster" in line:
+            # ignore.
+            continue
+
         if "textbox" in line:
             subject = line.rpartition(">")[-1].strip()
             top = library.find_between(line, "top:", "px;")
             left = library.find_between(line, "left:", "px;")
-            hour = library.determine_hour(top)
+            hour = library.determine_hour(data['type'], top)
             startTime = schoolHours[hour]
-            day = library.determine_day(left)
+            day = library.determine_day(data['type'], left)
             data['rooster'].append({"subject": subject, "hour": hour,
                                     "startTime": startTime, "day": day})
             continue
@@ -140,6 +153,13 @@ if n == 0:
 jsonData = library.toJson(data)
 library.writeFile("rooster-"+studentNumber+".json", jsonData, "w")
 print "[*] Wrote JSON to disk."
+
+# Did we determine the type of user?
+if not data['type']:
+    print "[!] Could not determine type of user."
+    sys.exit()
+else:
+    print "[*] User is a "+data['type']
 
 # =============================================== #
 #    2. Convert JSON to Google Calendar events.

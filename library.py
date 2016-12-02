@@ -58,16 +58,28 @@ def toJson( obj ):
 
 # Determine the day of the appointment
 # by comparing it's left offset.
+# @param string type
 # @param string left
 # @returns string
-def determine_day( left ):
+def determine_day( type, left ):
 
-    m = 20
-    avg1 = 180
-    avg2 = 290
-    avg3 = 413
-    avg4 = 552
-    avg5 = 680
+    if type == 'student':
+        m = 20
+        avg1 = 180
+        avg2 = 290
+        avg3 = 413
+        avg4 = 552
+        avg5 = 680
+    elif type == 'teacher':
+        m = 20
+        avg1 = 150 # 157
+        avg2 = 270 # 277, 276
+        avg3 = 400 # 401
+        avg4 = 530 # ~529
+        avg5 = 660 # 668
+    else:
+        print "[!] Invalid type given for lib.determine_day"
+        return False
 
     pos = int(left)
 
@@ -92,37 +104,57 @@ def determine_day( left ):
 # by comparing it's top offset.
 # @param string top
 # @returns integer
-def determine_hour( top ):
+def determine_hour( type, top ):
 
-    ##############                                               ##############
-    #                        turfgetallen            gemiddelde  verschil     #
-    # uur 0 (8.00-9.00)      147, 148                                         #
-    # uur 1 (9.00-10.00)     188 en 190px            189         ?            #
-    # uur 2 (10.00-11.00)    223, 221, 224, 222px    222,5       33,5         #
-    # uur 3 (11.15-12.15)    259, 261, 260, 258px    259,5       37           #
-    # uur 4 (12.15-13.15)    306, 303, 304,          304,3                    #
-    # uur 5 (13.45-14.45)    340, 341, 339,          340                      #
-    # uur 6 (14.45-15.45)    377, 374, 376,          375,6                    #
-    # uur 7 (16.00-17.00)    413, 412,               412,5                    #
-    # uur 8 (17.00-18.00)    447                                              #
-    ###########################################################################
+    if type == 'student':
+        ##############                                               ##############
+        #                        turfgetallen            gemiddelde  verschil     #
+        # uur 0 (8.00-9.00)      147, 148                                         #
+        # uur 1 (9.00-10.00)     188 en 190px            189                      #
+        # uur 2 (10.00-11.00)    223, 221, 224, 222px    222,5       33,5         #
+        # uur 3 (11.15-12.15)    259, 261, 260, 258px    259,5       37           #
+        # uur 4 (12.15-13.15)    306, 303, 304,          304,3       44,8         #
+        # uur 5 (13.45-14.45)    340, 341, 339,          340         35,7         #
+        # uur 6 (14.45-15.45)    377, 374, 376,          375,6       35,6         #
+        # uur 7 (16.00-17.00)    413, 412,               412,5       36,9         #
+        # uur 8 (17.00-18.00)    447                                              #
+        ###########################################################################
 
-    # We kunnen stellen dat de positie van een uur niet meer dan
-    # 10px afwijkt van zijn soort's gemiddelde. Dus als een top tussen
-    # 170px en 200px ligt, weten we zeker dat het een eerste lesuur is.
-    # En als een top tussen 210 en 230, dat het een tweede lesuur is.
-    # En als een top tussen 250 en 270, dat het een derde lesuur is, etc etc..
+        # Het verschil tussen uren is grofweg 30 < v < 50
 
-    m      = 20  # margin
-    avg0   = 147 # ~ 145
-    avg1   = 189 # ~ 190
-    avg2   = 223 # ~ 220
-    avg3   = 260 # ~ 260
-    avg4   = 304 # ~ 300
-    avg5   = 340 # ~ 340
-    avg6   = 376 # ~ 380
-    avg7   = 413 # ~ 410
-    avg8   = 445 # not enough data points.
+        # We kunnen stellen dat de positie van een uur niet meer dan
+        # 10px afwijkt van zijn soort's gemiddelde. Dus als een top tussen
+        # 170px en 200px ligt, weten we zeker dat het een eerste lesuur is.
+        # En als een top tussen 210 en 230, dat het een tweede lesuur is.
+        # En als een top tussen 250 en 270, dat het een derde lesuur is, etc etc..
+
+        m      = 20  # margin
+        avg0   = 147 # ~ 145
+        avg1   = 189 # ~ 190
+        avg2   = 223 # ~ 220
+        avg3   = 260 # ~ 260
+        avg4   = 304 # ~ 300
+        avg5   = 340 # ~ 340
+        avg6   = 376 # ~ 380
+        avg7   = 413 # ~ 410
+        avg8   = 445 # not enough data points.
+
+    elif type == 'teacher':
+
+        m      = 20
+        avg0   = 10e10 # unknown
+        avg1   = 170
+        avg2   = 10e10 # unknown
+        avg3   = 10e10 # unknown
+        avg4   = 10e10 # unknown
+        avg5   = 320
+        avg6   = 360
+        avg7   = 390
+        avg8   = 10e10 # unknown
+
+    else:
+        print "[!] Invalid type given for lib.determine_hour"
+        return False
 
     pos = int(top)
 
