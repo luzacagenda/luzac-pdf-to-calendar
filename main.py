@@ -120,7 +120,7 @@ with open("output-"+studentNumber+".html") as f:
             classroom = line.rpartition(":")[-1].strip()
             classrooms = classrooms + 1
 
-            # it's a malformed rooster there's more classrooms than textboxes found.
+            # it's a malformed rooster if more classrooms than textboxes are found.
             amountOfTextBoxes = len(data['rooster'])
             if amountOfTextBoxes < classrooms:
                 print "[!] Malformed rooster data. Empty classroom '"+str(classroom)+"' found."
@@ -129,15 +129,7 @@ with open("output-"+studentNumber+".html") as f:
                 data['rooster'][len(data['rooster'])-1]['classroom'] = classroom
             continue
 
-        if "dag" in line:
-            # ignore.
-            continue
-
-        if "uur" in line:
-            # ignore.
-            continue
-
-        if "Persoonlijk rooster" in line:
+        if "dag" in line or "uur" in line or "Persoonlijk rooster" in line:
             # ignore.
             continue
 
