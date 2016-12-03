@@ -72,10 +72,10 @@ def determine_day( type, left ):
         avg5 = 680
     elif type == 'teacher':
         m = 20
-        avg1 = 150 # 157
+        avg1 = 160 # 157, 170
         avg2 = 270 # 277, 276
-        avg3 = 400 # 401
-        avg4 = 530 # ~529
+        avg3 = 400 # 401, 413
+        avg4 = 540 # ~529, 552
         avg5 = 660 # 668
     else:
         print "[!] Invalid type given for lib.determine_day"
@@ -143,13 +143,13 @@ def determine_hour( type, top ):
 
         m      = 20
         avg0   = 10e10 # unknown
-        avg1   = 170
-        avg2   = 10e10 # unknown
-        avg3   = 10e10 # unknown
-        avg4   = 10e10 # unknown
-        avg5   = 320
-        avg6   = 360
-        avg7   = 390
+        avg1   = 170 # ... , 179
+        avg2   = 210 # 211
+        avg3   = 250 # 248
+        avg4   = 290 # 293
+        avg5   = 320 # ... , 329
+        avg6   = 360 # ... , 364
+        avg7   = 390 # ... , 402
         avg8   = 10e10 # unknown
 
     else:
