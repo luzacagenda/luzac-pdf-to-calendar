@@ -84,6 +84,7 @@ data['rooster'] = []
 n = 0
 
 # Parse all lines.
+classrooms = 0
 print "[*] Parsing output file."
 with open("output-"+studentNumber+".html") as f:
 
@@ -117,7 +118,15 @@ with open("output-"+studentNumber+".html") as f:
 
         if "lokaal" in line:
             classroom = line.rpartition(":")[-1].strip()
-            data['rooster'][len(data['rooster'])-1]['classroom'] = classroom
+            classrooms = classrooms + 1
+
+            # it's a malformed rooster there's more classrooms than textboxes found.
+            amountOfTextBoxes = len(data['rooster'])
+            if amountOfTextBoxes < classrooms:
+                print "[!] Malformed rooster data. Empty classroom '"+str(classroom)+"' found."
+                classrooms = classrooms - 1
+            else:
+                data['rooster'][len(data['rooster'])-1]['classroom'] = classroom
             continue
 
         if "dag" in line:
