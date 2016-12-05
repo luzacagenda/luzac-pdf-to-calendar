@@ -23,6 +23,7 @@ __version__         = "1.3.4"
 __timezone__        = "Europe/Amsterdam"
 __calendar__        = "primary"
 __debugMode__       = True
+__useGoogle__       = True
 __scopes__          = "https://www.googleapis.com/auth/calendar"
 __client_secret__   = "client_secret.json"
 
@@ -245,6 +246,13 @@ library.writeFile("events-"+studentNumber+".json", jsonEvents, "w")
 
 # Obtain credentials with Google OAuth2.
 #googlelib.test(__client_secret__, __scopes__, __calendar__)
+
+if not __useGoogle__:
+    print "\n[*] Finished parsing. Skipping Google upload."
+    print "[*] User type and page number:"
+    print data['type']
+    print studentNumber
+    sys.exit()
 
 print "\n[*] Ready to start adding events to calendar.";
 raw_input("    Press ENTER to continue..\n");
