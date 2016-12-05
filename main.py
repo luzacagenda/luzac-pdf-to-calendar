@@ -150,10 +150,6 @@ if n == 0:
     print "[!] Got 0 lines from PDFMiner, something went wrong."
     sys.exit()
 
-# Dump to JSON.
-jsonData = library.toJson(data)
-library.writeFile("rooster-"+studentNumber+".json", jsonData, "w")
-print "[*] Wrote JSON to disk."
 
 # Did we determine the type of user?
 if not data['type']:
@@ -162,9 +158,6 @@ if not data['type']:
 else:
     print "[*] User is a "+data['type']
 
-# =============================================== #
-#    2. Convert JSON to Google Calendar events.
-# =============================================== #
 
 # Get the next monday from the date when the PDF was sent.
 # The sent date is in d-m-yyyy format,
@@ -173,6 +166,23 @@ parts = data['date'].split("-")
 date = datetime.date(int(parts[2]), int(parts[1]), int(parts[0]))
 nextMonday = library.next_weekday(date, 0)
 print "[*] The next monday is at", nextMonday
+
+# Set a week number if we have a date and no week number is set.
+if not data['week'] and data['date']:
+    data['week'] = nextMonday.isocalendar()[1]
+    print "[*] Week number for this rooster is " + str(data['week'])
+
+
+# Dump to JSON.
+jsonData = library.toJson(data)
+library.writeFile("rooster-"+studentNumber+".json", jsonData, "w")
+print "[*] Wrote JSON to disk."
+
+
+# =============================================== #
+#    2. Convert JSON to Google Calendar events.
+# =============================================== #
+
 
 # Loop through all appointments and convert them
 # into Google Calendar event objects.
