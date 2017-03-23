@@ -14,6 +14,11 @@ import subprocess
 import json
 import datetime
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = dict
+
 # Import our files.
 import library
 #import googlelib
@@ -156,7 +161,7 @@ print "[*] The next monday is at", nextMonday
 
 # Loop through all appointments and convert them
 # into Google Calendar event objects.
-events = []
+events = {}
 for appointmentIndex, appointmentData in enumerate(data['rooster']):
 
     print "\r[*] Converting appointment " + str(appointmentIndex+1) + "/" + str(len(data['rooster'])),
@@ -186,31 +191,53 @@ for appointmentIndex, appointmentData in enumerate(data['rooster']):
     if not 'classroom' in appointmentData:
         appointmentData['classroom'] = "onbekend"
 
+    appointmentDateNice = appointmentStart.strftime('%d-%m-%Y')
+
     # Construct the event object.
-    events.append({
-        "summary": "["+str(appointmentData['hour'])+"] "+appointmentData['subject'],
-        "location": "Lokaal "+appointmentData['classroom'],
-        "description": "",
-        "start": {
-            "dateTime": appointmentStart.isoformat(),
-            "timeZone": __timezone__
-        },
-        "end": {
-            "dateTime": appointmentEnd.isoformat(),
-            "timeZone": __timezone__
-        },
-        "reminders": {
-            "useDefault": False,
-            "overrides": [
-                { "method": "popup", "minutes": 5 }
-            ]
-        }
+
+    #if not previousDate == appointmentDateNice:
+    #    num = num + 1
+    #    previousDate = appointmentDateNice
+
+
+    #if events.get(num) == None:
+    #if not num in events:
+    #    events.append([])
+    #    #events[num] = []
+
+    if events.get(appointmentDateNice) == None:
+        events[appointmentDateNice] = []
+
+    events[appointmentDateNice].append({
+
+        "hour": appointmentData['hour'],
+        "subject": appointmentData['subject'],
+        "location": 'Lokaal ' + appointmentData['classroom'],
+        "date": appointmentDateNice,
+        "startTime": appointmentStart.strftime('%H:%M'),
+        "endTime": appointmentEnd.strftime('%H:%M'),
+
+        "startDate": appointmentStart.isoformat(),
+        "endDate": appointmentEnd.isoformat()
+
     })
 
     pass
 
+
+def sort_dict_data(dictData):
+    return OrderedDict((k, v)
+                       for k, v in sorted(dictData.iteritems()))
+
+orderedEvents = sort_dict_data(events)
+
+orderedListEvents = []
+for key in orderedEvents:
+    orderedListEvents.append(orderedEvents[key])
+
+
 # Save this to disk.
-jsonEvents = library.toJson(events)
+jsonEvents = library.toJson(orderedListEvents)
 library.writeFile("events-"+studentNumber+".json", jsonEvents, "w")
 
 print "[*] Done."
