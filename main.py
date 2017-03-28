@@ -90,6 +90,7 @@ data['rooster'] = []
 n = 0
 
 # Parse all lines.
+classrooms = 0
 print "[*] Parsing output file."
 with open("output-"+studentNumber+".html") as f:
 
@@ -98,8 +99,17 @@ with open("output-"+studentNumber+".html") as f:
         n = n + 1
 
         if "Naam Leerling" in line:
+            data['type'] = 'student'
             data['name'] = line.split(">:", 1)[1].strip()
             print "[*] Name of student is "+data['name']
+            continue
+
+        if "Naam docent" in line:
+            data['type'] = 'teacher'
+            data['name'] = line.split(">:", 1)[1].strip()
+            print "[*] Name of teacher is "+data['name']
+            # teachers do not have week numbers.
+            data['week'] = False
             continue
 
         if "WEEKROOSTER" in line:
@@ -114,25 +124,30 @@ with open("output-"+studentNumber+".html") as f:
 
         if "lokaal" in line:
             classroom = line.rpartition(":")[-1].strip()
-            data['rooster'][len(data['rooster'])-1]['classroom'] = classroom
+            classrooms = classrooms + 1
+
+            # it's a malformed rooster if more classrooms than textboxes are found.
+            amountOfTextBoxes = len(data['rooster'])
+            if amountOfTextBoxes < classrooms:
+                print "[!] Malformed rooster data. Empty classroom '"+str(classroom)+"' found."
+                classrooms = classrooms - 1
+            else:
+                data['rooster'][len(data['rooster'])-1]['classroom'] = classroom
             continue
 
-        if "dag" in line:
-            # ignore.
-            continue
-
-        if "uur" in line:
+        if "dag" in line or "uur" in line or "Persoonlijk rooster" in line:
             # ignore.
             continue
 
         if "textbox" in line:
-            subject = line.rpartition(">")[-1].strip()
+            rawSubject = line.rpartition(">")[-1].strip()
+            subject = library.getNiceSubject(rawSubject)
             top = library.find_between(line, "top:", "px;")
             left = library.find_between(line, "left:", "px;")
-            hour = library.determine_hour(top)
+            hour = library.determine_hour(data['type'], top)
             startTime = schoolHours[hour]
-            day = library.determine_day(left)
-            data['rooster'].append({"subject": subject, "hour": hour,
+            day = library.determine_day(data['type'], left)
+            data['rooster'].append({"subject": subject, "rawSubject": rawSubject, "hour": hour,
                                     "startTime": startTime, "day": day})
             continue
 
@@ -147,8 +162,15 @@ jsonData = library.toJson(data)
 library.writeFile("rooster-"+studentNumber+".json", jsonData, "w")
 print "[*] Wrote JSON to disk."
 
+# Did we determine the type of user?
+if not data['type']:
+    print "[!] Could not determine type of user."
+    sys.exit()
+else:
+    print "[*] User is a "+data['type']
+
 # =============================================== #
-#    2. Convert JSON to Google Calendar events.
+#    2. Convert JSON to Custom JSON events.
 # =============================================== #
 
 # Get the next monday from the date when the PDF was sent.
@@ -158,6 +180,11 @@ parts = data['date'].split("-")
 date = datetime.date(int(parts[2]), int(parts[1]), int(parts[0]))
 nextMonday = library.next_weekday(date, 0)
 print "[*] The next monday is at", nextMonday
+
+# Set a week number if we have a date and no week number is set.
+if not data['week'] and data['date']:
+    data['week'] = nextMonday.isocalendar()[1]
+    print "[*] Week number for this rooster is " + str(data['week'])
 
 # Loop through all appointments and convert them
 # into Google Calendar event objects.
@@ -212,6 +239,7 @@ for appointmentIndex, appointmentData in enumerate(data['rooster']):
 
         "hour": appointmentData['hour'],
         "subject": appointmentData['subject'],
+        "rawSubject": appointmentData['rawSubject'],
         "location": 'Lokaal ' + appointmentData['classroom'],
         "date": appointmentDateNice,
         "startTime": appointmentStart.strftime('%H:%M'),

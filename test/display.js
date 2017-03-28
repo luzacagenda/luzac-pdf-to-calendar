@@ -46,11 +46,18 @@ json2table = function(json) {
   //console.log(json);
 
   var name = json.name;
+  var type = json.type;
   var date = json.date;
   var week = json.week;
   var rooster = json.rooster;
 
+  var translate = {
+    'teacher': 'Leraar(es)',
+    'student': 'Leerling'
+  };
+
   elInfo.querySelectorAll('#name')[0].innerHTML = '<strong>Naam</strong> '+name+'<br>';
+  elInfo.querySelectorAll('#type')[0].innerHTML = '<strong>Type</strong> '+translate[type]+'<br>';
   elInfo.querySelectorAll('#date')[0].innerHTML = '<strong>Datum uitgifte</strong> '+date+'<br>';
   elInfo.querySelectorAll('#week')[0].innerHTML = '<strong>Weeknummer</strong> '+week+'<br>';
 
